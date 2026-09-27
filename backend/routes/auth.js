@@ -21,11 +21,12 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await db.query(
-      'INSERT INTO users (email, password, first_name, last_name, college_name, year_of_study) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      'INSERT INTO users (email, password_hash, first_name, last_name, college_name, year_of_study) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [email, hashedPassword, first_name, last_name, college_name || '', year_of_study || 0]
     );
 
-    res.status(201).json({ message: 'User registered successfully', data: result.rows[0] });
+    const { password_hash, ...safeUser } = result.rows[0];
+    res.status(201).json({ message: 'User registered successfully', data: safeUser });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -45,7 +46,7 @@ router.post('/login', async (req, res) => {
     }
 
     const user = result.rows[0];
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(password, user.password_hash);
 
     if (!validPassword) {
       return res.status(401).json({ message: 'Invalid credentials' });
