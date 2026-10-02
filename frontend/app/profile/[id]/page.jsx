@@ -22,7 +22,7 @@ export default function ProfilePage() {
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [skillTeach, setSkillTeach] = useState('');
   const [skillLearn, setSkillLearn] = useState('');
-  const [mode, setMode] = useState('online');
+  const [mode, setMode] = useState('Online');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -261,9 +261,9 @@ export default function ProfilePage() {
                   onChange={(e) => setMode(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="online">🌐 Online</option>
-                  <option value="offline">📍 Offline</option>
-                  <option value="hybrid">🔄 Hybrid (Both)</option>
+                  <option value="Online">🌐 Online</option>
+                  <option value="Offline">📍 Offline</option>
+                  <option value="Hybrid">🔄 Hybrid (Both)</option>
                 </select>
               </div>
 

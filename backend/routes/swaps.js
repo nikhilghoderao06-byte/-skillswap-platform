@@ -9,7 +9,7 @@ router.post('/request', auth, async (req, res) => {
     const { provider_id, skill_teach_id, skill_learn_id, mode, message } = req.body;
     const result = await db.query(
       'INSERT INTO swap_requests (requester_id, provider_id, skill_teach_id, skill_learn_id, mode, message, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [req.user_id, provider_id, skill_teach_id, skill_learn_id, mode || 'online', message || '', 'pending']
+      [req.user_id, provider_id, skill_teach_id, skill_learn_id, mode || 'Online', message || '', 'pending']
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
