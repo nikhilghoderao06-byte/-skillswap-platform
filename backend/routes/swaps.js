@@ -29,6 +29,13 @@ router.get('/user/:userId', auth, async (req, res) => {
 
 router.put('/:id/accept', auth, async (req, res) => {
   try {
+    const existing = await db.query('SELECT provider_id FROM swap_requests WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ message: 'Swap request not found' });
+    }
+    if (String(existing.rows[0].provider_id) !== String(req.user_id)) {
+      return res.status(403).json({ message: 'Only the provider can accept this request' });
+    }
     const result = await db.query('UPDATE swap_requests SET status = $1 WHERE id = $2 RETURNING *', ['accepted', req.params.id]);
     res.json(result.rows[0]);
   } catch (error) {
@@ -38,6 +45,13 @@ router.put('/:id/accept', auth, async (req, res) => {
 
 router.put('/:id/reject', auth, async (req, res) => {
   try {
+    const existing = await db.query('SELECT provider_id FROM swap_requests WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ message: 'Swap request not found' });
+    }
+    if (String(existing.rows[0].provider_id) !== String(req.user_id)) {
+      return res.status(403).json({ message: 'Only the provider can reject this request' });
+    }
     const result = await db.query('UPDATE swap_requests SET status = $1 WHERE id = $2 RETURNING *', ['rejected', req.params.id]);
     res.json(result.rows[0]);
   } catch (error) {

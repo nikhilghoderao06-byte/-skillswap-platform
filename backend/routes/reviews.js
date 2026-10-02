@@ -56,6 +56,14 @@ router.post('/', auth, async (req, res) => {
 
     console.log('Review created:', result.rows[0]);
 
+    // Recalculate the reviewed user's average rating
+    await db.query(
+      `UPDATE users SET rating = (
+         SELECT ROUND(AVG(rating)::numeric, 2) FROM reviews WHERE reviewed_user_id = $1
+       ) WHERE id = $1`,
+      [reviewee_id]
+    );
+
     res.status(201).json({
       message: 'Review created successfully',
       data: result.rows[0],

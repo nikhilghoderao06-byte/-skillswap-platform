@@ -6,7 +6,10 @@ const router = express.Router();
 
 router.get('/:id', auth, async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
+    const result = await db.query(
+      'SELECT id, first_name, last_name, email, bio, college_name, year_of_study, rating, created_at FROM users WHERE id = $1',
+      [req.params.id]
+    );
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -18,9 +21,12 @@ router.get('/:id', auth, async (req, res) => {
 
 router.put('/:id', auth, async (req, res) => {
   try {
+    if (String(req.user_id) !== String(req.params.id)) {
+      return res.status(403).json({ message: 'You can only edit your own profile' });
+    }
     const { first_name, last_name, bio, college_name, year_of_study } = req.body;
     const result = await db.query(
-      'UPDATE users SET first_name = $1, last_name = $2, bio = $3, college_name = $4, year_of_study = $5 WHERE id = $6 RETURNING *',
+      'UPDATE users SET first_name = $1, last_name = $2, bio = $3, college_name = $4, year_of_study = $5 WHERE id = $6 RETURNING id, first_name, last_name, email, bio, college_name, year_of_study, rating, created_at',
       [first_name, last_name, bio || '', college_name, year_of_study, req.params.id]
     );
     res.json(result.rows[0]);
