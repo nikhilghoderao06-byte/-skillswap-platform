@@ -6,3 +6,4 @@ dist/
 .next/
 build/
 *.log
+skillswap_backup.sql
