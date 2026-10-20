@@ -87,7 +87,8 @@ export default function RegisterPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Password"
+              placeholder="Password (8+ characters, letters and numbers)"
+              minLength={8}
               className="w-full px-4 py-2 pr-11 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required
             />

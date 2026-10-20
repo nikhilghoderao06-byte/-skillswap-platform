@@ -8,6 +8,18 @@ const getAuthHeader = () => {
   };
 };
 
+// Throws an Error carrying the server's own message when it sent one
+const failWith = async (response, fallback) => {
+  let message = fallback;
+  try {
+    const data = await response.json();
+    message = data.message || data.error || fallback;
+  } catch (e) {
+    // response had no JSON body, keep the fallback text
+  }
+  throw new Error(message);
+};
+
 const userAPI = {
   register: async (userData) => {
     const response = await fetch(`${API_URL}/api/auth/register`, {
@@ -15,7 +27,7 @@ const userAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
     });
-    if (!response.ok) throw new Error('Registration failed');
+    if (!response.ok) await failWith(response, 'Registration failed');
     return response.json();
   },
 
@@ -25,7 +37,7 @@ const userAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    if (!response.ok) throw new Error('Login failed');
+    if (!response.ok) await failWith(response, 'Login failed');
     return response.json();
   },
 
@@ -43,7 +55,7 @@ const userAPI = {
       headers: getAuthHeader(),
       body: JSON.stringify(data),
     });
-    if (!response.ok) throw new Error('Failed to update profile');
+    if (!response.ok) await failWith(response, 'Failed to update profile');
     return response.json();
   },
 
@@ -100,7 +112,7 @@ const swapAPI = {
       headers: getAuthHeader(),
       body: JSON.stringify(data),
     });
-    if (!response.ok) throw new Error('Failed to create request');
+    if (!response.ok) await failWith(response, 'Failed to create request');
     return response.json();
   },
 
@@ -117,7 +129,7 @@ const swapAPI = {
       method: 'PUT',
       headers: getAuthHeader(),
     });
-    if (!response.ok) throw new Error('Failed to accept request');
+    if (!response.ok) await failWith(response, 'Failed to accept request');
     return response.json();
   },
 
@@ -126,7 +138,7 @@ const swapAPI = {
       method: 'PUT',
       headers: getAuthHeader(),
     });
-    if (!response.ok) throw new Error('Failed to reject request');
+    if (!response.ok) await failWith(response, 'Failed to reject request');
     return response.json();
   },
 };

@@ -184,6 +184,7 @@ export default function SessionsPage() {
 
       const response = await reviewAPI.createReview({
         reviewee_id: reviewingUserId,
+        session_id: reviewingSessionId,
         rating: parseInt(rating),
         feedback: feedback.trim(),
       });

@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 require('dotenv').config();
 const db = require('./config/database');
 
@@ -11,6 +12,10 @@ const reviewRoutes = require('./routes/reviews');
 const sessionRoutes = require('./routes/sessions');
 
 const app = express();
+
+// Render sits behind a proxy; this makes rate limiting see each visitor's real IP
+app.set('trust proxy', 1);
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 const allowedOrigins = (process.env.FRONTEND_URL || '')
   .split(',')
@@ -27,7 +32,7 @@ app.use(cors({
     }
   },
 }));
-app.use(express.json());
+app.use(express.json({ limit: '100kb' }));
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
